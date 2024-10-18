@@ -1,0 +1,32 @@
+@model IEnumerable<eBookStore.Models.Admin>
+
+@{
+    ViewData["Title"] = "Manage Admins";
+}
+
+<h1>Manage Admins</h1>
+
+<p>
+    <a asp-action="CreateAdmin" class="btn btn-primary">Create New Admin</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>@item.Username</td>
+            <td>@item.Email</td>
+            <td>
+                <a asp-action="EditAdmin" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a> |
+                <a asp-action="DeleteAdmin" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

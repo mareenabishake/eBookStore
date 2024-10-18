@@ -23,6 +23,13 @@ namespace eBookStore.Controllers
             return View();
         }
 
+        public IActionResult Search(string searchTerm)
+        {
+            // TODO: Implement search logic
+            ViewData["SearchTerm"] = searchTerm;
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

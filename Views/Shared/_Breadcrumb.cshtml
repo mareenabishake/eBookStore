@@ -1,0 +1,18 @@
+@{
+    var controller = ViewContext.RouteData.Values["controller"].ToString();
+    var action = ViewContext.RouteData.Values["action"].ToString();
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+        @if (controller != "Home")
+        {
+            <li class="breadcrumb-item"><a asp-controller="@controller" asp-action="Index">@controller</a></li>
+        }
+        @if (action != "Index")
+        {
+            <li class="breadcrumb-item active" aria-current="page">@action</li>
+        }
+    </ol>
+</nav>

@@ -1,8 +1,66 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Welcome to e-book pvt. Ltd";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="jumbotron text-center">
+    <h1 class="display-4">Welcome to e-book pvt. Ltd</h1>
+    <p class="lead">Your premier destination for quality used books in Sri Lanka</p>
+    <hr class="my-4">
+    <p>Explore our vast collection of books covering multiple disciplines.</p>
+    <a class="btn btn-primary btn-lg" href="#search" role="button">Start Browsing</a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Wide Selection</h2>
+        <p>From academic texts to popular fiction, we have books for every reader.</p>
+    </div>
+    <div class="col-md-4">
+        <h2>Quality Assured</h2>
+        <p>All our books are carefully inspected to ensure they're in great condition.</p>
+    </div>
+    <div class="col-md-4">
+        <h2>Best Prices</h2>
+        <p>Get the books you love at prices you'll love even more.</p>
+    </div>
+</div>
+
+<div id="search" class="my-4">
+    <h2 class="text-center">Find Your Next Great Read</h2>
+    <form asp-action="Search" asp-controller="Home" method="get" class="form-inline justify-content-center">
+        <input type="text" name="searchTerm" class="form-control mb-2 mr-sm-2" placeholder="Enter book title, author, or ISBN">
+        <button type="submit" class="btn btn-primary mb-2">Search</button>
+    </form>
+</div>
+
+<div class="text-center my-4">
+    <h2>Join Our Community</h2>
+    <p>Register now to access exclusive deals and manage your orders online.</p>
+    <a asp-controller="Customer" asp-action="Register" class="btn btn-success">Register Now</a>
+</div>
+
+@section Styles {
+    <style>
+        .jumbotron {
+            background-color: #e9ecef;
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+            border-radius: 0.3rem;
+        }
+    </style>
+}
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h2 class="text-center">Quick Links</h2>
+        <div class="d-flex justify-content-center">
+            <a asp-controller="Books" asp-action="Index" class="btn btn-primary mx-2">Browse Books</a>
+            <a asp-controller="Customer" asp-action="Register" class="btn btn-success mx-2">Register</a>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-info mx-2">Login</a>
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-warning mx-2">Admin Dashboard</a>
+            }
+        </div>
+    </div>
 </div>
