@@ -52,13 +52,15 @@
                     <strong>Total</strong>
                     <strong>@Model.Sum(i => i.Price * i.Quantity).ToString("C")</strong>
                 </div>
-                @if (Context.Session.GetString("UserId") != null)
+                @if (ViewBag.IsAuthenticated)
                 {
-                    <a asp-controller="Cart" asp-action="Checkout" class="btn btn-primary btn-block mt-3">Checkout</a>
+                    <form asp-controller="Cart" asp-action="Checkout" method="post">
+                        <button type="submit" class="btn btn-primary btn-block mt-3">Checkout</button>
+                    </form>
                 }
                 else
                 {
-                    <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Checkout", "Cart")" class="btn btn-primary btn-block mt-3">Checkout</a>
+                    <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Index", "Cart")" class="btn btn-primary btn-block mt-3">Login to Checkout</a>
                 }
             </div>
         </div>

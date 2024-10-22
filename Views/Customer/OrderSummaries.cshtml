@@ -1,0 +1,31 @@
+@model IEnumerable<eBookStore.Models.Order>
+
+@{
+    ViewData["Title"] = "Order Summaries";
+    Layout = "_Layout";
+}
+
+<h1>Order Summaries</h1>
+
+<div class="container">
+    @foreach (var order in Model)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5>Order #@order.Id</h5>
+                <p>Date: @order.OrderDate.ToShortDateString()</p>
+                <p>Status: @order.Status</p>
+            </div>
+            <div class="card-body">
+                <h6>Items:</h6>
+                <ul>
+                    @foreach (var item in order.OrderItems)
+                    {
+                        <li>@item.Book.Title - Quantity: @item.Quantity - Price: @(item.Book.Price * item.Quantity)</li>
+                    }
+                </ul>
+                <h6>Total Amount: @order.TotalAmount.ToString("C")</h6>
+            </div>
+        </div>
+    }
+</div>

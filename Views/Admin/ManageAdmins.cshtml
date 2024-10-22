@@ -1,7 +1,7 @@
 @model IEnumerable<eBookStore.Models.Admin>
-
 @{
     ViewData["Title"] = "Manage Admins";
+    Layout = "_AdminLayout";
 }
 
 <h1>Manage Admins</h1>
@@ -12,7 +12,6 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Username</th>
             <th>Email</th>
             <th>Actions</th>
         </tr>
@@ -20,7 +19,6 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>@item.Username</td>
             <td>@item.Email</td>
             <td>
                 <a asp-action="EditAdmin" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a> |

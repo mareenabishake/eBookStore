@@ -41,5 +41,7 @@ namespace eBookStore.Models
         public string Password { get; set; }
 
         public string Role { get; set; } = "Customer";
+
+        public string UserId { get; set; }
     }
 }

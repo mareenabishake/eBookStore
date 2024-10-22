@@ -8,17 +8,20 @@ using Microsoft.EntityFrameworkCore;
 using eBookStore.Services;
 using System.IO;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 
 [Authorize(Roles = "Admin")]
 public class AdminController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly AuthService _authService;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public AdminController(ApplicationDbContext context, AuthService authService)
+    public AdminController(ApplicationDbContext context, AuthService authService, UserManager<IdentityUser> userManager)
     {
         _context = context;
         _authService = authService;
+        _userManager = userManager;
     }
 
     public async Task<IActionResult> Dashboard()
@@ -54,15 +57,82 @@ public class AdminController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateAdmin([Bind("Username,FirstName,LastName,NICNo,Address,DateOfBirth,Email,ContactNo,Password")] Admin admin)
+    public async Task<IActionResult> CreateAdmin([Bind("FirstName,LastName,NICNo,Address,DateOfBirth,Email,ContactNo,Password")] Admin admin)
     {
+        Console.WriteLine("Admin registration process started");
+        Console.WriteLine($"Received admin data: Email={admin.Email}, FirstName={admin.FirstName}, LastName={admin.LastName}");
+
+        ModelState.Remove("UserId");
+
         if (ModelState.IsValid)
         {
-            admin.Role = "Admin";
-            _context.Add(admin);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(ManageAdmins));
+            var user = new IdentityUser 
+            { 
+                UserName = admin.Email, 
+                NormalizedUserName = admin.Email.ToUpper(),
+                Email = admin.Email,
+                NormalizedEmail = admin.Email.ToUpper(),
+                EmailConfirmed = true,
+                PhoneNumber = admin.ContactNo,
+                PhoneNumberConfirmed = true,
+                TwoFactorEnabled = false,
+                LockoutEnabled = false,
+                AccessFailedCount = 0
+            };
+
+            Console.WriteLine($"Attempting to create IdentityUser with Email: {user.Email}, Phone: {user.PhoneNumber}");
+
+            var result = await _userManager.CreateAsync(user, admin.Password);
+
+            if (result.Succeeded)
+            {
+                Console.WriteLine("IdentityUser created successfully");
+                
+                try
+                {
+                    await _userManager.AddToRoleAsync(user, "Admin");
+                    Console.WriteLine("Added user to Admin role");
+
+                    admin.UserId = user.Id;
+                    admin.Role = "Admin";
+                    admin.Password = "null";
+
+                    _context.Admins.Add(admin);
+                    await _context.SaveChangesAsync();
+
+                    Console.WriteLine("Admin saved successfully");
+
+                    return RedirectToAction(nameof(ManageAdmins));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error in admin registration: {ex.Message}");
+                    ModelState.AddModelError(string.Empty, "Error during registration process.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Failed to create IdentityUser. Errors:");
+                foreach (var error in result.Errors)
+                {
+                    Console.WriteLine($"- {error.Description}");
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
         }
+        else
+        {
+            Console.WriteLine("ModelState is invalid. Errors:");
+            foreach (var modelState in ModelState.Values)
+            {
+                foreach (var error in modelState.Errors)
+                {
+                    Console.WriteLine($"- {error.ErrorMessage}");
+                }
+            }
+        }
+
+        Console.WriteLine("Admin registration failed. Returning to registration view.");
         return View(admin);
     }
 
@@ -100,7 +170,6 @@ public class AdminController : Controller
                     return NotFound();
                 }
 
-                existingAdmin.Username = admin.Username;
                 existingAdmin.FirstName = admin.FirstName;
                 existingAdmin.LastName = admin.LastName;
                 existingAdmin.NICNo = admin.NICNo;

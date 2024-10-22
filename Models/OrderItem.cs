@@ -2,13 +2,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace eBookStore.Models
 {
-    public class CartItem
+    public class OrderItem
     {
+        [Key]
         public int Id { get; set; }
+        public int OrderId { get; set; }
+        public Order Order { get; set; }
         public int BookId { get; set; }
-        public string Title { get; set; }
-        public decimal Price { get; set; }
+        public Book Book { get; set; }
         public int Quantity { get; set; }
-        public string ImageUrl { get; set; }
+        public decimal Price { get; set; }
     }
 }

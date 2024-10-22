@@ -5,6 +5,8 @@ using eBookStore.Data;
 using Microsoft.AspNetCore.Authorization;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 
 namespace eBookStore.Controllers
 {
@@ -12,10 +14,12 @@ namespace eBookStore.Controllers
     public class BookController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public BookController(ApplicationDbContext context)
+        public BookController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
@@ -211,6 +215,83 @@ namespace eBookStore.Controllers
         private bool BookExists(int id)
         {
             return _context.Books.Any(e => e.Id == id);
+        }
+
+        // [Authorize]  // Comment this out temporarily
+        public async Task<IActionResult> PurchasedBooks()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            Console.WriteLine($"User ID: {user.Id}");
+
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.UserId == user.Id);
+            if (customer == null)
+            {
+                Console.WriteLine("Customer not found");
+                return RedirectToAction("Index", "Home");
+            }
+
+            Console.WriteLine($"Customer ID: {customer.Id}");
+
+            var purchasedBooks = await _context.OrderItems
+                .Where(oi => oi.Order.CustomerId == customer.UserId)
+                .GroupBy(oi => oi.BookId)
+                .Select(g => new PurchasedBookViewModel
+                {
+                    Book = g.First().Book,
+                    TotalQuantity = g.Sum(oi => oi.Quantity)
+                })
+                .ToListAsync();
+
+            Console.WriteLine($"Number of purchased books: {purchasedBooks.Count}");
+
+            return View(purchasedBooks);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Comment(int id)
+        {
+            var book = await _context.Books.FindAsync(id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new BookCommentViewModel
+            {
+                BookId = book.Id,
+                BookTitle = book.Title
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Comment(BookCommentViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                var comment = new BookComment
+                {
+                    BookId = model.BookId,
+                    UserId = user.Id,
+                    CommentText = model.CommentText,
+                    CommentDate = DateTime.Now
+                };
+
+                _context.BookComments.Add(comment);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(PurchasedBooks));
+            }
+
+            return View(model);
         }
     }
 }

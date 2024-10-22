@@ -1,0 +1,55 @@
+@model Order
+
+<h2>Order Confirmation</h2>
+
+<p>Thank you for your order! Your order number is: @Model.Id</p>
+
+<h3>Order Details</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Book</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OrderItems)
+        {
+            <tr>
+                <td>@item.Book.Title</td>
+                <td>@item.Quantity</td>
+                <td>@item.Price.ToString("C")</td>
+                <td>@((item.Price * item.Quantity).ToString("C"))</td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="3" class="text-right"><strong>Total:</strong></td>
+            <td><strong>@Model.TotalAmount.ToString("C")</strong></td>
+        </tr>
+    </tfoot>
+</table>
+
+<h3 class="mt-4">Payment Details</h3>
+<form>
+    <div class="form-group">
+        <label for="cardNumber">Card Number:</label>
+        <input type="text" id="cardNumber" name="cardNumber" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="expiryDate">Expiry Date:</label>
+        <input type="text" id="expiryDate" name="expiryDate" class="form-control" placeholder="MM/YY" required />
+    </div>
+    <div class="form-group">
+        <label for="cvv">CVV:</label>
+        <input type="text" id="cvv" name="cvv" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Complete Payment</button>
+</form>
+
+<div class="mt-4">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Continue Shopping</a>
+</div>

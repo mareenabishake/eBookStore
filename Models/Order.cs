@@ -8,7 +8,7 @@ namespace eBookStore.Models
         public int Id { get; set; }
 
         [Required]
-        public int CustomerId { get; set; }
+        public string CustomerId { get; set; }  // Changed to string to match IdentityUser's Id
 
         [Required]
         public DateTime OrderDate { get; set; }
@@ -20,7 +20,6 @@ namespace eBookStore.Models
         public string Status { get; set; } = "Pending";
 
         // You might want to add a collection of OrderItems here later
-        // public ICollection<OrderItem> OrderItems { get; set; }
+        public List<OrderItem> OrderItems { get; set; } // Make sure this is OrderItems, not CartItems
     }
 }
-

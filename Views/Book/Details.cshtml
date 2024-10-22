@@ -52,8 +52,9 @@
                     data: { id: bookId },
                     success: function (result) {
                         if (result.success) {
-                            $("#cart-count").text(result.count);
                             alert("Book added to cart!");
+                            // Update cart count in the layout
+                            updateCartCount();
                         }
                     }
                 });

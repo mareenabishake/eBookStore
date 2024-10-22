@@ -22,7 +22,9 @@
             <div class="card-body">
                 <h5 class="card-title">Total</h5>
                 <p class="card-text">@Model.Sum(i => i.Price * i.Quantity).ToString("C")</p>
-                <button class="btn btn-primary btn-block" id="place-order">Place Order</button>
+                <form asp-action="Checkout" method="post">
+                    <button type="submit" class="btn btn-primary btn-block">Place Order</button>
+                </form>
             </div>
         </div>
     </div>

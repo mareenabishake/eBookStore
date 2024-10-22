@@ -1,0 +1,26 @@
+@model eBookStore.Models.BookCommentViewModel
+
+@{
+    ViewData["Title"] = "Comment on Book";
+    Layout = "_Layout";
+}
+
+<h1>Comment on "@Model.BookTitle"</h1>
+
+<form asp-action="Comment">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="BookId" />
+    <input type="hidden" asp-for="BookTitle" />
+    <div class="form-group">
+        <label asp-for="CommentText" class="control-label"></label>
+        <textarea asp-for="CommentText" class="form-control" rows="5"></textarea>
+        <span asp-validation-for="CommentText" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Submit Comment" class="btn btn-primary" />
+    </div>
+</form>
+
+<div>
+    <a asp-action="PurchasedBooks">Back to Purchased Books</a>
+</div>

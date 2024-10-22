@@ -2,94 +2,99 @@
 
 @{
     ViewData["Title"] = "Admin Dashboard";
+    Layout = "_AdminLayout";
 }
 
-<div class="row">
-    <div class="col-md-3">
-        <div class="list-group">
-            <a href="#" class="list-group-item list-group-item-action active">Dashboard</a>
-            <a asp-controller="Book" asp-action="ManageBooks" class="list-group-item list-group-item-action">Manage Books</a>
-            <a asp-controller="Customer" asp-action="ManageCustomers" class="list-group-item list-group-item-action">Manage Customers</a>
-            <a asp-controller="Admin" asp-action="ManageAdmins" class="list-group-item list-group-item-action">Manage Admins</a>
-            <a asp-controller="Admin" asp-action="ManageOrders" class="list-group-item list-group-item-action">Manage Orders</a>
-        </div>
-    </div>
-    <div class="col-md-9">
-        <h1>Admin Dashboard</h1>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Admin Dashboard</h1>
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Books</h5>
+                            <p class="card-text display-4">@Model.TotalBooks</p>
+                            <a asp-controller="Book" asp-action="ManageBooks" class="btn btn-light">Manage Books</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Customers</h5>
+                            <p class="card-text display-4">@Model.TotalCustomers</p>
+                            <a asp-controller="Customer" asp-action="ManageCustomers" class="btn btn-light">Manage Customers</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card bg-warning text-dark">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Orders</h5>
+                            <p class="card-text display-4">@Model.TotalOrders</p>
+                            <a asp-controller="Admin" asp-action="ManageOrders" class="btn btn-light">Manage Orders</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Manage Admins</h5>
+                            <p class="card-text">Manage admin accounts</p>
+                            <a asp-controller="Admin" asp-action="ManageAdmins" class="btn btn-light">Manage Admins</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Total Books</h5>
-                        <p class="card-text">@Model.TotalBooks</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Total Customers</h5>
-                        <p class="card-text">@Model.TotalCustomers</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Total Orders</h5>
-                        <p class="card-text">@Model.TotalOrders</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <h2>Recent Books</h2>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Author</th>
-                            <th>Price</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var book in Model.RecentBooks)
-                        {
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h2>Recent Books</h2>
+                    <table class="table table-striped">
+                        <thead>
                             <tr>
-                                <td>@book.Title</td>
-                                <td>@book.Author</td>
-                                <td>@book.Price.ToString("C")</td>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Price</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-md-6">
-                <h2>Recent Orders</h2>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Customer</th>
-                            <th>Total</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var order in Model.RecentOrders)
-                        {
+                        </thead>
+                        <tbody>
+                            @foreach (var book in Model.RecentBooks)
+                            {
+                                <tr>
+                                    <td>@book.Title</td>
+                                    <td>@book.Author</td>
+                                    <td>@book.Price.ToString("C")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h2>Recent Orders</h2>
+                    <table class="table table-striped">
+                        <thead>
                             <tr>
-                                <td>@order.Id</td>
-                                <td>@order.CustomerId</td>
-                                <td>@order.TotalAmount.ToString("C")</td>
-                                <td>@order.OrderDate.ToShortDateString()</td>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Date</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.RecentOrders)
+                            {
+                                <tr>
+                                    <td>@order.Id</td>
+                                    <td>@order.CustomerId</td>
+                                    <td>@order.TotalAmount.ToString("C")</td>
+                                    <td>@order.OrderDate.ToShortDateString()</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
