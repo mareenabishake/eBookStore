@@ -1,0 +1,46 @@
+@model IEnumerable<eBookStore.Models.Book>
+
+@{
+    ViewData["Title"] = "Manage Books";
+}
+
+<h1>Manage Books</h1>
+
+<p>
+    <a asp-controller="Book" asp-action="CreateBook" class="btn btn-primary">Create New Book</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Image</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>ISBN</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Publisher</th>
+            <th>Genre</th>
+            <th>Published Year</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td><img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/books/default-book.jpg" : $"/images/books/{item.ImageUrl}")" alt="@item.Title" style="width: 50px; height: auto;"></td>
+            <td>@item.Title</td>
+            <td>@item.Author</td>
+            <td>@item.ISBN</td>
+            <td>@item.Price.ToString("C")</td>
+            <td>@item.StockQuantity</td>
+            <td>@item.Publisher</td>
+            <td>@item.Genre</td>
+            <td>@item.PublishedYear</td>
+            <td>
+                <a asp-action="EditBook" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a> |
+                <a asp-action="DeleteBook" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -8,10 +8,10 @@
     <div class="col-md-3">
         <div class="list-group">
             <a href="#" class="list-group-item list-group-item-action active">Dashboard</a>
-            <a asp-action="ManageBooks" class="list-group-item list-group-item-action">Manage Books</a>
-            <a asp-action="ManageCustomers" class="list-group-item list-group-item-action">Manage Customers</a>
-            <a asp-action="ManageAdmins" class="list-group-item list-group-item-action">Manage Admins</a>
-            <a asp-action="ManageOrders" class="list-group-item list-group-item-action">Manage Orders</a>
+            <a asp-controller="Book" asp-action="ManageBooks" class="list-group-item list-group-item-action">Manage Books</a>
+            <a asp-controller="Customer" asp-action="ManageCustomers" class="list-group-item list-group-item-action">Manage Customers</a>
+            <a asp-controller="Admin" asp-action="ManageAdmins" class="list-group-item list-group-item-action">Manage Admins</a>
+            <a asp-controller="Admin" asp-action="ManageOrders" class="list-group-item list-group-item-action">Manage Orders</a>
         </div>
     </div>
     <div class="col-md-9">

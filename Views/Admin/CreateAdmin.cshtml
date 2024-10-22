@@ -1,8 +1,8 @@
 @model eBookStore.Models.Admin
 
-<h2>Create Admin</h2>
+<h2>Register Admin</h2>
 
-<form asp-action="RegisterAdmin">
+<form asp-action="CreateAdmin">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-group">
         <label asp-for="Username" class="control-label"></label>
@@ -50,7 +50,7 @@
         <span asp-validation-for="Password" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <input type="submit" value="Create" class="btn btn-primary" />
+        <input type="submit" value="Register" class="btn btn-primary" />
     </div>
 </form>
 

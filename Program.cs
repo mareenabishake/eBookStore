@@ -1,7 +1,9 @@
 using eBookStore.Data;
-using eBookStore.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using eBookStore.Models;
+using eBookStore.Services;
+
 
 namespace eBookStore
 {
@@ -24,6 +26,18 @@ namespace eBookStore
                     options.LogoutPath = "/Account/Logout";
                 });
 
+            // Add session support
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
+            // Add IHttpContextAccessor
+            builder.Services.AddHttpContextAccessor();
+
             builder.Services.AddScoped<AuthService>();
 
             var app = builder.Build();
@@ -37,11 +51,10 @@ namespace eBookStore
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseSession();
 
             app.MapControllerRoute(
                 name: "default",

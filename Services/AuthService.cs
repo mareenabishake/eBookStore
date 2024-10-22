@@ -30,6 +30,11 @@ namespace eBookStore.Services
             return VerifyPassword(password, customer.Password);
         }
 
+        private bool VerifyPassword(string inputPassword, string storedPassword)
+        {
+            return HashPassword(inputPassword) == storedPassword;
+        }
+
         public string HashPassword(string password)
         {
             using (var sha256 = SHA256.Create())
@@ -37,11 +42,6 @@ namespace eBookStore.Services
                 var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
                 return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
             }
-        }
-
-        private bool VerifyPassword(string password, string storedHash)
-        {
-            return HashPassword(password) == storedHash;
         }
     }
 }

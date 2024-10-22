@@ -1,0 +1,26 @@
+@model IEnumerable<eBookStore.Models.Book>
+
+@{
+    ViewData["Title"] = "Browse Books";
+}
+
+<h1>Browse Books</h1>
+
+<div class="row">
+    @foreach (var book in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="@(string.IsNullOrEmpty(book.ImageUrl) ? "/images/default-book.jpg" : book.ImageUrl)" class="card-img-top" alt="@book.Title">
+                <div class="card-body">
+                    <h5 class="card-title">@book.Title</h5>
+                    <p class="card-text">By @book.Author</p>
+                    <p class="card-text">@book.Price.ToString("C")</p>
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Details" asp-route-id="@book.Id" class="btn btn-primary">Details</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

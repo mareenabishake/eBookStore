@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<eBookStore.Models.Book>
+
+@{
     ViewData["Title"] = "Welcome to e-book pvt. Ltd";
 }
 
@@ -25,6 +27,25 @@
     </div>
 </div>
 
+<h2 class="text-center mt-5">Featured Books</h2>
+<div class="row">
+    @foreach (var book in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <a asp-controller="Book" asp-action="Details" asp-route-id="@book.Id" class="text-decoration-none">
+                <div class="card h-100">
+                    <img src="@(string.IsNullOrEmpty(book.ImageUrl) ? "/images/default-book.jpg" : $"/images/books/{book.ImageUrl}")" class="card-img-top" alt="@book.Title">
+                    <div class="card-body">
+                        <h5 class="card-title text-dark">@book.Title</h5>
+                        <p class="card-text text-muted">By @book.Author</p>
+                        <p class="card-text text-primary">@book.Price.ToString("C")</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+</div>
+
 <div id="search" class="my-4">
     <h2 class="text-center">Find Your Next Great Read</h2>
     <form asp-action="Search" asp-controller="Home" method="get" class="form-inline justify-content-center">
@@ -47,20 +68,12 @@
             margin-bottom: 2rem;
             border-radius: 0.3rem;
         }
+        .card {
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
     </style>
 }
-
-<div class="row mt-4">
-    <div class="col-md-12">
-        <h2 class="text-center">Quick Links</h2>
-        <div class="d-flex justify-content-center">
-            <a asp-controller="Books" asp-action="Index" class="btn btn-primary mx-2">Browse Books</a>
-            <a asp-controller="Customer" asp-action="Register" class="btn btn-success mx-2">Register</a>
-            <a asp-controller="Account" asp-action="Login" class="btn btn-info mx-2">Login</a>
-            @if (User.IsInRole("Admin"))
-            {
-                <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-warning mx-2">Admin Dashboard</a>
-            }
-        </div>
-    </div>
-</div>

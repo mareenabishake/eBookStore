@@ -57,5 +57,105 @@ namespace eBookStore.Controllers
             }
             return View(model);
         }
+
+        // Customer management methods migrated from AdminController
+        public async Task<IActionResult> ManageCustomers()
+        {
+            var customers = await _context.Customers.ToListAsync();
+            return View(customers);
+        }
+
+        public async Task<IActionResult> EditCustomer(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var customer = await _context.Customers.FindAsync(id);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+            return View(customer); // Return the customer model directly
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCustomer(int id, [Bind("Id,FirstName,LastName,NICNo,Address,DateOfBirth,Email,ContactNo")] Customer customer)
+        {
+            if (id != customer.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var existingCustomer = await _context.Customers.FindAsync(id);
+                    if (existingCustomer == null)
+                    {
+                        return NotFound();
+                    }
+
+                    existingCustomer.FirstName = customer.FirstName;
+                    existingCustomer.LastName = customer.LastName;
+                    existingCustomer.NICNo = customer.NICNo;
+                    existingCustomer.Address = customer.Address;
+                    existingCustomer.DateOfBirth = customer.DateOfBirth;
+                    existingCustomer.Email = customer.Email;
+                    existingCustomer.ContactNo = customer.ContactNo;
+
+                    _context.Update(existingCustomer);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!CustomerExists(customer.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(ManageCustomers));
+            }
+            return View(customer);
+        }
+
+        public async Task<IActionResult> DeleteCustomer(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var customer = await _context.Customers
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            return View(customer);
+        }
+
+        [HttpPost, ActionName("DeleteCustomer")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCustomerConfirmed(int id)
+        {
+            var customer = await _context.Customers.FindAsync(id);
+            _context.Customers.Remove(customer);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ManageCustomers));
+        }
+
+        private bool CustomerExists(int id)
+        {
+            return _context.Customers.Any(e => e.Id == id);
+        }
     }
 }

@@ -28,6 +28,18 @@ namespace eBookStore.Models
 
         public int StockQuantity { get; set; }
 
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string Publisher { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        public string Genre { get; set; }
+
+        [Required]
+        [Range(1000, 9999)]
+        public int PublishedYear { get; set; }
     }
 }

@@ -1,0 +1,40 @@
+@model List<eBookStore.Models.CartItem>
+
+<h2>Checkout</h2>
+
+<div class="row">
+    <div class="col-md-8">
+        <h3>Order Summary</h3>
+        @foreach (var item in Model)
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Title</h5>
+                    <p class="card-text">Quantity: @item.Quantity</p>
+                    <p class="card-text">Price: @item.Price.ToString("C")</p>
+                    <p class="card-text">Subtotal: @((item.Price * item.Quantity).ToString("C"))</p>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total</h5>
+                <p class="card-text">@Model.Sum(i => i.Price * i.Quantity).ToString("C")</p>
+                <button class="btn btn-primary btn-block" id="place-order">Place Order</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#place-order').click(function () {
+                // Implement order placement logic here
+                alert('Order placed successfully!');
+            });
+        });
+    </script>
+}
