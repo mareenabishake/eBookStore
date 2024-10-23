@@ -1,0 +1,54 @@
+@model eBookStore.Models.Order
+
+@{
+    ViewData["Title"] = "Order Details";
+    Layout = "_AdminLayout";
+}
+
+<h1>Order Details</h1>
+
+<div>
+    <h4>Order #@Model.Id</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Customer Email</dt>
+        <dd class="col-sm-10">@Model.Customer.Email</dd>
+        <dt class="col-sm-2">Order Date</dt>
+        <dd class="col-sm-10">@Model.OrderDate.ToShortDateString()</dd>
+        <dt class="col-sm-2">Total Amount</dt>
+        <dd class="col-sm-10">@Model.TotalAmount.ToString("C")</dd>
+        <dt class="col-sm-2">Status</dt>
+        <dd class="col-sm-10">@Model.Status</dd>
+        <dt class="col-sm-2">Payment Status</dt>
+        <dd class="col-sm-10">@Model.PaymentStatus</dd>
+    </dl>
+</div>
+
+<h4>Order Items</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Book Title</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OrderItems)
+        {
+            <tr>
+                <td>@item.Book.Title</td>
+                <td>@item.Quantity</td>
+                <td>@item.Book.Price.ToString("C")</td>
+                <td>@((item.Quantity * item.Book.Price).ToString("C"))</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="EditOrder" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+    <a asp-action="ManageOrders" class="btn btn-secondary">Back to List</a>
+</div>
+

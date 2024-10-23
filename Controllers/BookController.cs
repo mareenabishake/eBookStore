@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 
 namespace eBookStore.Controllers
 {
-    [Authorize(Roles = "Admin")]
     public class BookController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -217,7 +216,7 @@ namespace eBookStore.Controllers
             return _context.Books.Any(e => e.Id == id);
         }
 
-        // [Authorize]  // Comment this out temporarily
+        [Authorize] 
         public async Task<IActionResult> PurchasedBooks()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -228,17 +227,8 @@ namespace eBookStore.Controllers
 
             Console.WriteLine($"User ID: {user.Id}");
 
-            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.UserId == user.Id);
-            if (customer == null)
-            {
-                Console.WriteLine("Customer not found");
-                return RedirectToAction("Index", "Home");
-            }
-
-            Console.WriteLine($"Customer ID: {customer.Id}");
-
             var purchasedBooks = await _context.OrderItems
-                .Where(oi => oi.Order.CustomerId == customer.UserId)
+                .Where(oi => oi.Order.CustomerId == user.Id)
                 .GroupBy(oi => oi.BookId)
                 .Select(g => new PurchasedBookViewModel
                 {

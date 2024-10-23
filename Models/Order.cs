@@ -1,5 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
+using eBookStore.Models;
 
 namespace eBookStore.Models
 {
@@ -8,7 +10,8 @@ namespace eBookStore.Models
         public int Id { get; set; }
 
         [Required]
-        public string CustomerId { get; set; }  // Changed to string to match IdentityUser's Id
+        public string CustomerId { get; set; }
+        public IdentityUser? Customer { get; set; }
 
         [Required]
         public DateTime OrderDate { get; set; }
@@ -19,7 +22,8 @@ namespace eBookStore.Models
 
         public string Status { get; set; } = "Pending";
 
-        // You might want to add a collection of OrderItems here later
-        public List<OrderItem> OrderItems { get; set; } // Make sure this is OrderItems, not CartItems
+        public string PaymentStatus { get; set; } = "Payment Due";
+
+        public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
 }

@@ -12,14 +12,20 @@
 <table class="table">
     <thead>
         <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
             <th>Email</th>
+            <th>Phone Number</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>@item.FirstName</td>
+            <td>@item.LastName</td>
             <td>@item.Email</td>
+            <td>@item.ContactNo</td>
             <td>
                 <a asp-action="EditAdmin" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a> |
                 <a asp-action="DeleteAdmin" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>

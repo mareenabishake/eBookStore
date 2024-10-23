@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System;
 using Microsoft.AspNetCore.Authorization;
 using System.Linq;
+using System.Collections.Generic;
+using System.Text.Json;
 
 namespace eBookStore.Controllers
 {
@@ -35,10 +37,7 @@ namespace eBookStore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register([Bind("FirstName,LastName,NICNo,Address,DateOfBirth,Email,ContactNo,Password")] Customer customer)
         {
-            Console.WriteLine("Registration process started");
-            Console.WriteLine($"Received customer data: Email={customer.Email}, FirstName={customer.FirstName}, LastName={customer.LastName}");
 
-            // Remove UserId from ModelState as it's not part of the form
             ModelState.Remove("UserId");
 
             if (ModelState.IsValid)
@@ -57,19 +56,14 @@ namespace eBookStore.Controllers
                     AccessFailedCount = 0
                 };
 
-                Console.WriteLine($"Attempting to create IdentityUser with Email: {user.Email}, Phone: {user.PhoneNumber}");
-
                 var result = await _userManager.CreateAsync(user, customer.Password);
 
                 if (result.Succeeded)
                 {
-                    Console.WriteLine("IdentityUser created successfully");
                     
                     try
                     {
                         await _userManager.AddToRoleAsync(user, "Customer");
-                        Console.WriteLine("Added user to Customer role");
-
                         customer.UserId = user.Id;
                         customer.Role = "Customer";
                         customer.Password = "null"; // Do not store the plain text password
@@ -77,14 +71,17 @@ namespace eBookStore.Controllers
                         _context.Customers.Add(customer);
                         await _context.SaveChangesAsync();
 
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        Console.WriteLine("User signed in successfully");
+                        // Check if the current user is an admin
+                        if (!User.IsInRole("Admin"))
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                            return RedirectToAction("ManageCustomers", "Customer");
+                        }
 
                         return RedirectToAction("Index", "Home");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error in user registration: {ex.Message}");
                         ModelState.AddModelError(string.Empty, "Error during registration process.");
                     }
                 }
@@ -200,6 +197,17 @@ namespace eBookStore.Controllers
                 }
                 return RedirectToAction(nameof(ManageCustomers));
             }
+            else
+            {
+                Console.WriteLine("ModelState is invalid. Errors:");
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        Console.WriteLine($"- {error.ErrorMessage}");
+                    }
+                }
+            }
             return View(customer);
         }
 
@@ -235,7 +243,7 @@ namespace eBookStore.Controllers
             return _context.Customers.Any(e => e.Id == id);
         }
 
-        [Authorize(Roles = "Customer")]
+        [Authorize]
         public async Task<IActionResult> Dashboard()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -262,18 +270,21 @@ namespace eBookStore.Controllers
 
             var booksPurchased = customerOrders.SelectMany(o => o.OrderItems).Sum(oi => oi.Quantity);
 
+            var cart = GetCart(); // Assuming you have a method to get the cart
             var viewModel = new CustomerDashboardViewModel
             {
+                CustomerId = customer.UserId,
                 TotalOrders = customerOrders.Count,
                 BooksPurchased = booksPurchased,
                 RecentOrders = customerOrders.OrderByDescending(o => o.OrderDate).Take(5).ToList(),
-                RecentBooks = await _context.Books.OrderByDescending(b => b.Id).Take(5).ToListAsync()
+                RecentBooks = await _context.Books.OrderByDescending(b => b.Id).Take(5).ToListAsync(),
+                CartItemCount = cart.Sum(item => item.Quantity)
             };
 
             return View(viewModel);
         }
 
-        [Authorize(Roles = "Customer")]
+        [Authorize]
         public async Task<IActionResult> OrderSummaries()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -293,5 +304,17 @@ namespace eBookStore.Controllers
 
             return View(orders);
         }
+
+        private List<CartItem> GetCart()
+        {
+            var userId = HttpContext.Session.GetString("UserId") ?? "anonymous";
+            var cartJson = HttpContext.Session.GetString($"Cart_{userId}");
+            if (string.IsNullOrEmpty(cartJson))
+            {
+                return new List<CartItem>();
+            }
+            return JsonSerializer.Deserialize<List<CartItem>>(cartJson);
+        }
+
     }
 }

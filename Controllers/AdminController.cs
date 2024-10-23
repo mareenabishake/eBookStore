@@ -194,6 +194,17 @@ public class AdminController : Controller
             }
             return RedirectToAction(nameof(ManageAdmins));
         }
+        else
+        {
+            Console.WriteLine("ModelState is invalid. Errors:");
+            foreach (var modelState in ModelState.Values)
+            {
+                foreach (var error in modelState.Errors)
+                {
+                    Console.WriteLine($"- {error.ErrorMessage}");
+                }
+            }
+        }
         return View(admin);
     }
 

@@ -36,12 +36,11 @@ namespace eBookStore.Models
         [Phone]
         public string ContactNo { get; set; }
 
-        [Required]
         [DataType(DataType.Password)]
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         public string Role { get; set; } = "Customer";
 
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
     }
 }

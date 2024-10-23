@@ -154,11 +154,10 @@ namespace eBookStore.Controllers
             return View(order);
         }
 
-        private List<CartItem> GetCart()
+        public List<CartItem> GetCart()
         {
             var userId = HttpContext.Session.GetString("UserId") ?? "anonymous";
             var cartJson = HttpContext.Session.GetString($"Cart_{userId}");
-            Console.WriteLine($"Retrieved cart from session for user {userId}: {cartJson}");
             if (string.IsNullOrEmpty(cartJson))
             {
                 return new List<CartItem>();
@@ -171,6 +170,21 @@ namespace eBookStore.Controllers
             var userId = HttpContext.Session.GetString("UserId") ?? "anonymous";
             var cartJson = JsonSerializer.Serialize(cart);
             HttpContext.Session.SetString($"Cart_{userId}", cartJson);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CompletePayment(int orderId)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null)
+            {
+                return Json(new { success = false, message = "Order not found." });
+            }
+
+            order.PaymentStatus = "Payment Made";
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
         }
     }
 }

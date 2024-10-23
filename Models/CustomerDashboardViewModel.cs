@@ -8,5 +8,7 @@ namespace eBookStore.Models
         public int BooksPurchased { get; set; }
         public List<Order> RecentOrders { get; set; }
         public List<Book> RecentBooks { get; set; }
+        public string CustomerId { get; set; }
+        public int CartItemCount { get; set; }
     }
 }

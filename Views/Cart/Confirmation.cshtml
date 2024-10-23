@@ -34,7 +34,7 @@
 </table>
 
 <h3 class="mt-4">Payment Details</h3>
-<form>
+<form id="paymentForm">
     <div class="form-group">
         <label for="cardNumber">Card Number:</label>
         <input type="text" id="cardNumber" name="cardNumber" class="form-control" required />
@@ -47,9 +47,29 @@
         <label for="cvv">CVV:</label>
         <input type="text" id="cvv" name="cvv" class="form-control" required />
     </div>
-    <button type="submit" class="btn btn-primary">Complete Payment</button>
+    <button type="button" class="btn btn-primary" onclick="completePayment(@Model.Id)">Complete Payment</button>
 </form>
 
 <div class="mt-4">
     <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Continue Shopping</a>
 </div>
+
+@section Scripts {
+    <script>
+        function completePayment(orderId) {
+            $.ajax({
+                url: '@Url.Action("CompletePayment", "Cart")',
+                type: 'POST',
+                data: { orderId: orderId },
+                success: function (response) {
+                    if (response.success) {
+                        alert('Payment completed successfully!');
+                        // Optionally update the UI to reflect the payment status
+                    } else {
+                        alert('Payment failed. Please try again.');
+                    }
+                }
+            });
+        }
+    </script>
+}

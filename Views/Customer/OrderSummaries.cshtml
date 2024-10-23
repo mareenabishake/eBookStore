@@ -25,6 +25,10 @@
                     }
                 </ul>
                 <h6>Total Amount: @order.TotalAmount.ToString("C")</h6>
+                <div class="mt-3">
+                    <a asp-controller="Order" asp-action="EditOrder" asp-route-id="@order.Id" class="btn btn-primary">Edit Order</a>
+                    <a asp-controller="Order" asp-action="DeleteOrder" asp-route-id="@order.Id" class="btn btn-danger">Cancel Order</a>
+                </div>
             </div>
         </div>
     }

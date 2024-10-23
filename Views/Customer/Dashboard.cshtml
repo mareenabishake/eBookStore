@@ -28,6 +28,16 @@
                         </div>
                     </div>
                 </div>
+                <!-- New Cart Tile -->
+                <div class="col-md-4 mb-4">
+                    <div class="card bg-warning text-dark">
+                        <div class="card-body">
+                            <h5 class="card-title">Cart</h5>
+                            <p class="card-text display-4">@Model.CartItemCount</p>
+                            <a asp-controller="Cart" asp-action="Index" class="btn btn-light">View Cart</a>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="row mt-4">
@@ -40,6 +50,7 @@
                                 <th>Date</th>
                                 <th>Total</th>
                                 <th>Status</th>
+                                <th>Payment Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -50,6 +61,13 @@
                                     <td>@order.OrderDate.ToShortDateString()</td>
                                     <td>@order.TotalAmount.ToString("C")</td>
                                     <td>@order.Status</td>
+                                    <td>
+                                        @order.PaymentStatus
+                                        @if (order.PaymentStatus == "Payment Due")
+                                        {
+                                            <a asp-controller="Cart" asp-action="Confirmation" asp-route-orderId="@order.Id" class="btn btn-warning btn-sm ml-2">Make Payment</a>
+                                        }
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -63,7 +81,6 @@
                                 <th>Title</th>
                                 <th>Author</th>
                                 <th>Price</th>
-                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -73,9 +90,6 @@
                                     <td>@book.Title</td>
                                     <td>@book.Author</td>
                                     <td>@book.Price.ToString("C")</td>
-                                    <td>
-                                        <a asp-controller="Book" asp-action="Comment" asp-route-id="@book.Id" class="btn btn-sm btn-primary">Comment</a>
-                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -85,3 +99,4 @@
         </div>
     </div>
 </div>
+
