@@ -76,7 +76,7 @@ namespace eBookStore.Controllers
                         if (!User.IsInRole("Admin"))
                         {
                             await _signInManager.SignInAsync(user, isPersistent: false);
-                            return RedirectToAction("ManageCustomers", "Customer");
+                            return RedirectToAction("Dashboard", "Customer");
                         }
 
                         return RedirectToAction("Index", "Home");
