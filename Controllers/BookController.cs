@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 
 namespace eBookStore.Controllers
 {
@@ -285,6 +287,45 @@ namespace eBookStore.Controllers
             }
 
             return View(model);
+        }
+
+        public IActionResult GenerateBookReport()
+        {
+            var books = _context.Books.ToList();
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                Document document = new Document(PageSize.A4, 25, 25, 30, 30);
+                PdfWriter writer = PdfWriter.GetInstance(document, ms);
+                document.Open();
+
+                document.Add(new Paragraph("Books Report"));
+                document.Add(new Paragraph("\n"));
+
+                PdfPTable table = new PdfPTable(6);
+                table.AddCell("Title");
+                table.AddCell("Author");
+                table.AddCell("ISBN");
+                table.AddCell("Price");
+                table.AddCell("Stock");
+                table.AddCell("Genre");
+
+                foreach (var book in books)
+                {
+                    table.AddCell(book.Title);
+                    table.AddCell(book.Author);
+                    table.AddCell(book.ISBN);
+                    table.AddCell(book.Price.ToString("C"));
+                    table.AddCell(book.StockQuantity.ToString());
+                    table.AddCell(book.Genre);
+                }
+
+                document.Add(table);
+                document.Close();
+                writer.Close();
+
+                return File(ms.ToArray(), "application/pdf", "BooksReport.pdf");
+            }
         }
     }
 }

@@ -11,6 +11,9 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Security.Claims;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using System.IO;
 
 namespace eBookStore.Controllers
 {
@@ -431,6 +434,41 @@ namespace eBookStore.Controllers
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Profile updated successfully.";
             return RedirectToAction(nameof(Dashboard));
+        }
+
+        public IActionResult GenerateCustomerReport()
+        {
+            var customers = _context.Customers.ToList();
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                Document document = new Document(PageSize.A4, 25, 25, 30, 30);
+                PdfWriter writer = PdfWriter.GetInstance(document, ms);
+                document.Open();
+
+                document.Add(new Paragraph("Customers Report"));
+                document.Add(new Paragraph("\n"));
+
+                PdfPTable table = new PdfPTable(4);
+                table.AddCell("First Name");
+                table.AddCell("Last Name");
+                table.AddCell("Email");
+                table.AddCell("Contact No");
+
+                foreach (var customer in customers)
+                {
+                    table.AddCell(customer.FirstName);
+                    table.AddCell(customer.LastName);
+                    table.AddCell(customer.Email);
+                    table.AddCell(customer.ContactNo);
+                }
+
+                document.Add(table);
+                document.Close();
+                writer.Close();
+
+                return File(ms.ToArray(), "application/pdf", "CustomersReport.pdf");
+            }
         }
     }
 }

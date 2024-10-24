@@ -5,6 +5,9 @@ using eBookStore.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using System.IO;
 
 namespace eBookStore.Controllers
 {
@@ -208,6 +211,43 @@ namespace eBookStore.Controllers
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
             return View(orders);
+        }
+
+        public IActionResult GenerateOrderReport()
+        {
+            var orders = _context.Orders.Include(o => o.Customer).ToList();
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                Document document = new Document(PageSize.A4, 25, 25, 30, 30);
+                PdfWriter writer = PdfWriter.GetInstance(document, ms);
+                document.Open();
+
+                document.Add(new Paragraph("Orders Report"));
+                document.Add(new Paragraph("\n"));
+
+                PdfPTable table = new PdfPTable(5);
+                table.AddCell("Order ID");
+                table.AddCell("Customer Email");
+                table.AddCell("Order Date");
+                table.AddCell("Total Amount");
+                table.AddCell("Status");
+
+                foreach (var order in orders)
+                {
+                    table.AddCell(order.Id.ToString());
+                    table.AddCell(order.Customer.Email);
+                    table.AddCell(order.OrderDate.ToShortDateString());
+                    table.AddCell(order.TotalAmount.ToString("C"));
+                    table.AddCell(order.Status);
+                }
+
+                document.Add(table);
+                document.Close();
+                writer.Close();
+
+                return File(ms.ToArray(), "application/pdf", "OrdersReport.pdf");
+            }
         }
     }
 }
