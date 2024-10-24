@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace eBookStore.Models
 {
@@ -41,5 +42,7 @@ namespace eBookStore.Models
         [Required]
         [Range(1000, 9999)]
         public int PublishedYear { get; set; }
+
+        public ICollection<BookComment> BookComments { get; set; }
     }
 }

@@ -175,9 +175,25 @@ namespace eBookStore.Controllers
                 return NotFound();
             }
 
+            // Check if the current user is the owner of the order
+            var user = await _userManager.GetUserAsync(User);
+            if (order.CustomerId != user.Id && !await _userManager.IsInRoleAsync(user, "Admin"))
+            {
+                return Forbid();
+            }
+
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(ManageOrders));
+
+            // Redirect to the appropriate page based on user role
+            if (await _userManager.IsInRoleAsync(user, "Customer"))
+            {
+                return RedirectToAction("OrderSummaries", "Customer");
+            }
+            else
+            {
+                return RedirectToAction(nameof(ManageOrders));
+            }
         }
 
         private bool OrderExists(int id)

@@ -121,6 +121,20 @@
             updateAuthStatus();
         });
     </script>
+    <script>
+        function clearCartAndLogout() {
+            $.ajax({
+                url: '@Url.Action("ClearCart", "Cart")',
+                type: 'POST',
+                success: function (result) {
+                    if (result.success) {
+                        // Proceed with the actual logout
+                        document.getElementById('logoutForm').submit();
+                    }
+                }
+            });
+        }
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
     <script src="~/Identity/lib/jquery-validation/dist/jquery.validate.js"></script>
     <script src="~/Identity/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>

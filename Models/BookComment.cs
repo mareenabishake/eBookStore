@@ -1,5 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
 namespace eBookStore.Models
 {
@@ -20,5 +22,7 @@ namespace eBookStore.Models
         public DateTime CommentDate { get; set; }
 
         public Book Book { get; set; }
+
+        public IdentityUser? User { get; set; }
     }
 }

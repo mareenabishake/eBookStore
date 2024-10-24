@@ -64,7 +64,8 @@
                 success: function (response) {
                     if (response.success) {
                         alert('Payment completed successfully!');
-                        // Optionally update the UI to reflect the payment status
+                        // Redirect to the home page
+                        window.location.href = '@Url.Action("Index", "Home")';
                     } else {
                         alert('Payment failed. Please try again.');
                     }

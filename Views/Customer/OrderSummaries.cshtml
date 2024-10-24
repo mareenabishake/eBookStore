@@ -26,8 +26,33 @@
                 </ul>
                 <h6>Total Amount: @order.TotalAmount.ToString("C")</h6>
                 <div class="mt-3">
-                    <a asp-controller="Order" asp-action="EditOrder" asp-route-id="@order.Id" class="btn btn-primary">Edit Order</a>
-                    <a asp-controller="Order" asp-action="DeleteOrder" asp-route-id="@order.Id" class="btn btn-danger">Cancel Order</a>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal@(order.Id)">
+                        Cancel Order
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteModal@(order.Id)" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel@(order.Id)" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel@(order.Id)">Confirm Order Cancellation</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to cancel Order #@order.Id?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <form asp-controller="Order" asp-action="DeleteOrder" asp-route-id="@order.Id" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger">Confirm Cancellation</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

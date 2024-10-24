@@ -41,6 +41,27 @@
     </div>
 </div>
 
+<h3 class="mt-5">Comments on this book</h3>
+@if (Model.BookComments != null && Model.BookComments.Any())
+{
+    <div class="list-group">
+        @foreach (var comment in Model.BookComments.OrderByDescending(c => c.CommentDate))
+        {
+            <div class="list-group-item">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">@comment.User?.UserName</h5>
+                    <small>@comment.CommentDate.ToString("MMM dd, yyyy")</small>
+                </div>
+                <p class="mb-1">@comment.CommentText</p>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>No comments yet. Be the first to comment!</p>
+}
+
 @section Scripts {
     <script>
         $(document).ready(function () {

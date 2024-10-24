@@ -113,7 +113,7 @@ namespace eBookStore.Controllers
 
             var order = new Order
             {
-                CustomerId = user.Id, // This is now a string
+                CustomerId = user.Id,
                 OrderDate = DateTime.Now,
                 TotalAmount = cart.Sum(item => item.Price * item.Quantity),
                 Status = "Pending",
@@ -128,7 +128,8 @@ namespace eBookStore.Controllers
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            HttpContext.Session.Remove("Cart");
+            // Clear the cart after successful checkout
+            ClearCart();
 
             return RedirectToAction("Confirmation", new { orderId = order.Id });
         }
@@ -184,6 +185,14 @@ namespace eBookStore.Controllers
             order.PaymentStatus = "Payment Made";
             await _context.SaveChangesAsync();
 
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public IActionResult ClearCart()
+        {
+            var userId = HttpContext.Session.GetString("UserId") ?? "anonymous";
+            HttpContext.Session.Remove($"Cart_{userId}");
             return Json(new { success = true });
         }
     }
