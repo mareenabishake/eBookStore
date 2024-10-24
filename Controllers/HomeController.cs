@@ -3,6 +3,7 @@ using eBookStore.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace eBookStore.Controllers
 {
@@ -28,11 +29,21 @@ namespace eBookStore.Controllers
             return View();
         }
 
-        public IActionResult Search(string searchTerm)
+        public async Task<IActionResult> Search(string searchTerm)
         {
-            // TODO: Implement search logic
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return RedirectToAction("Index");
+            }
+
+            var books = await _context.Books
+                .Where(b => b.Title.Contains(searchTerm) || 
+                            b.Author.Contains(searchTerm) || 
+                            b.ISBN.Contains(searchTerm))
+                .ToListAsync();
+
             ViewData["SearchTerm"] = searchTerm;
-            return View();
+            return View(books);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

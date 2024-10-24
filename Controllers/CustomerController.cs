@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Security.Claims;
 
 namespace eBookStore.Controllers
 {
@@ -233,9 +234,53 @@ namespace eBookStore.Controllers
         public async Task<IActionResult> DeleteCustomerConfirmed(int id)
         {
             var customer = await _context.Customers.FindAsync(id);
-            _context.Customers.Remove(customer);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(ManageCustomers));
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.FindByIdAsync(customer.UserId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Check if the current user is the customer or an admin
+            if (User.IsInRole("Admin") || User.FindFirstValue(ClaimTypes.NameIdentifier) == customer.UserId)
+            {
+                var result = await _userManager.DeleteAsync(user);
+                if (result.Succeeded)
+                {
+                    _context.Customers.Remove(customer);
+                    await _context.SaveChangesAsync();
+
+                    // If the user deleted their own account, sign them out
+                    if (User.FindFirstValue(ClaimTypes.NameIdentifier) == customer.UserId)
+                    {
+                        await _signInManager.SignOutAsync();
+                        return RedirectToAction("Index", "Home");
+                    }
+
+                    // If an admin deleted the account, redirect to manage customers
+                    return RedirectToAction(nameof(ManageCustomers));
+                }
+                else
+                {
+                    // Handle errors
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+            }
+            else
+            {
+                // Unauthorized access
+                return Forbid();
+            }
+
+            // If we get here, something went wrong
+            return View("Error");
         }
 
         private bool CustomerExists(int id)
@@ -316,5 +361,76 @@ namespace eBookStore.Controllers
             return JsonSerializer.Deserialize<List<CartItem>>(cartJson);
         }
 
+        [Authorize]
+        public async Task<IActionResult> EditProfile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.UserId == user.Id);
+
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new EditProfileViewModel
+            {
+                Id = customer.Id, // Add this line
+                FirstName = customer.FirstName,
+                LastName = customer.LastName,
+                NICNo = customer.NICNo,
+                Address = customer.Address,
+                DateOfBirth = customer.DateOfBirth,
+                Email = customer.Email,
+                ContactNo = customer.ContactNo
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfile(EditProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.UserId == user.Id);
+
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            customer.FirstName = model.FirstName;
+            customer.LastName = model.LastName;
+            customer.NICNo = model.NICNo;
+            customer.Address = model.Address;
+            customer.DateOfBirth = model.DateOfBirth;
+            customer.Email = model.Email;
+            customer.ContactNo = model.ContactNo;
+
+            _context.Update(customer);
+
+            if (!string.IsNullOrEmpty(model.CurrentPassword) && !string.IsNullOrEmpty(model.NewPassword) && !string.IsNullOrEmpty(model.ConfirmNewPassword))
+            {
+                var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+                if (!changePasswordResult.Succeeded)
+                {
+                    foreach (var error in changePasswordResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View(model);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Profile updated successfully.";
+            return RedirectToAction(nameof(Dashboard));
+        }
     }
 }
