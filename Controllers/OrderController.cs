@@ -150,6 +150,7 @@ namespace eBookStore.Controllers
             return View(order);
         }
 
+        // GET: Displays the order deletion confirmation page
         public async Task<IActionResult> DeleteOrder(int? id)
         {
             if (id == null)
@@ -168,6 +169,7 @@ namespace eBookStore.Controllers
             return View(order);
         }
 
+        // POST: Handles the deletion of an order
         [HttpPost, ActionName("DeleteOrder")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

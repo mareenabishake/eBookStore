@@ -5,6 +5,7 @@ using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
+// This controller handles the home page and general navigation
 namespace eBookStore.Controllers
 {
     public class HomeController : Controller
@@ -18,17 +19,20 @@ namespace eBookStore.Controllers
             _context = context;
         }
 
+        // GET: Displays the home page with featured books
         public async Task<IActionResult> Index()
         {
             var books = await _context.Books.Take(6).ToListAsync(); // Get the first 6 books
             return View(books);
         }
 
+        // GET: Displays the privacy policy page
         public IActionResult Privacy()
         {
             return View();
         }
 
+        // GET: Handles book search functionality
         public async Task<IActionResult> Search(string searchTerm)
         {
             if (string.IsNullOrWhiteSpace(searchTerm))
@@ -46,6 +50,7 @@ namespace eBookStore.Controllers
             return View(books);
         }
 
+        // GET: Displays custom error page
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

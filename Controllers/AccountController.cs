@@ -11,6 +11,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 
+// This controller handles user authentication and account-related operations
 namespace eBookStore.Controllers
 {
     public class AccountController : Controller
@@ -24,12 +25,14 @@ namespace eBookStore.Controllers
             _signInManager = signInManager;
         }
 
+        // GET: Displays the login form
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
+        // POST: Handles user login
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {

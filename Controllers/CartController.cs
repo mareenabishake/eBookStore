@@ -6,6 +6,7 @@ using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
+// This controller handles shopping cart operations
 namespace eBookStore.Controllers
 {
     public class CartController : Controller
@@ -19,6 +20,7 @@ namespace eBookStore.Controllers
             _userManager = userManager;
         }
 
+        // GET: Displays the current shopping cart
         public IActionResult Index()
         {
             var cart = GetCart();
@@ -26,6 +28,7 @@ namespace eBookStore.Controllers
             return View(cart);
         }
 
+        // POST: Adds a book to the shopping cart
         [HttpPost]
         public IActionResult AddToCart(int id)
         {

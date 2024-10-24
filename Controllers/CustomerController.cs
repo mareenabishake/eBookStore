@@ -15,6 +15,8 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System.IO;
 
+// This controller handles all customer-related operations
+// Including registration, profile management, and report generation
 namespace eBookStore.Controllers
 {
     public class CustomerController : Controller
@@ -32,11 +34,13 @@ namespace eBookStore.Controllers
             _authService = authService;
         }
 
+        // GET: Displays the customer registration form
         public IActionResult Register()
         {
             return View();
         }
 
+        // POST: Handles customer registration
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register([Bind("FirstName,LastName,NICNo,Address,DateOfBirth,Email,ContactNo,Password")] Customer customer)
@@ -291,6 +295,7 @@ namespace eBookStore.Controllers
             return _context.Customers.Any(e => e.Id == id);
         }
 
+        // GET: Displays the customer dashboard
         [Authorize]
         public async Task<IActionResult> Dashboard()
         {
@@ -364,6 +369,7 @@ namespace eBookStore.Controllers
             return JsonSerializer.Deserialize<List<CartItem>>(cartJson);
         }
 
+        // GET: Displays the customer profile edit form
         [Authorize]
         public async Task<IActionResult> EditProfile()
         {
@@ -390,6 +396,7 @@ namespace eBookStore.Controllers
             return View(viewModel);
         }
 
+        // POST: Handles customer profile update
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -436,6 +443,7 @@ namespace eBookStore.Controllers
             return RedirectToAction(nameof(Dashboard));
         }
 
+        // GET: Generates a PDF report of all customers
         public IActionResult GenerateCustomerReport()
         {
             var customers = _context.Customers.ToList();

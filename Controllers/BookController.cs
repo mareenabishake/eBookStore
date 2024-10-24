@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Http;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
+// This controller handles all book-related operations
+// Including listing, details, creation, editing, and management of books
 namespace eBookStore.Controllers
 {
     public class BookController : Controller
@@ -23,12 +25,14 @@ namespace eBookStore.Controllers
             _userManager = userManager;
         }
 
+        // GET: Retrieves all books and displays them
         public async Task<IActionResult> Index()
         {
             var books = await _context.Books.ToListAsync();
             return View(books);
         }
 
+        // GET: Displays details of a specific book, including comments
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
@@ -50,17 +54,20 @@ namespace eBookStore.Controllers
             return View(book);
         }
 
+        // GET: Retrieves all books for management purposes
         public async Task<IActionResult> ManageBooks()
         {
             var books = await _context.Books.ToListAsync();
             return View("ManageBooks", books);
         }
 
+        // GET: Displays the form to create a new book
         public IActionResult CreateBook()
         {
             return View();
         }
 
+        // POST: Handles the creation of a new book, including image upload
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateBook([Bind("Title,Author,ISBN,Description,Price,StockQuantity,Publisher,Genre,PublishedYear")] Book book, IFormFile image)
@@ -126,6 +133,7 @@ namespace eBookStore.Controllers
             return View(book);
         }
 
+        // GET: Displays the form to edit an existing book
         public async Task<IActionResult> EditBook(int? id)
         {
             if (id == null)
@@ -141,6 +149,7 @@ namespace eBookStore.Controllers
             return View(book);
         }
 
+        // POST: Handles the editing of an existing book, including image update
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditBook(int id, [Bind("Id,Title,Author,ISBN,Description,Price,StockQuantity,ImageUrl,Publisher,Genre,PublishedYear")] Book book, IFormFile image)
@@ -221,7 +230,8 @@ namespace eBookStore.Controllers
             return _context.Books.Any(e => e.Id == id);
         }
 
-        [Authorize] 
+        // GET: Retrieves and displays books purchased by the current user
+        [Authorize]
         public async Task<IActionResult> PurchasedBooks()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -247,6 +257,7 @@ namespace eBookStore.Controllers
             return View(purchasedBooks);
         }
 
+        // GET: Displays the form to add a comment to a book
         [Authorize]
         public async Task<IActionResult> Comment(int id)
         {
@@ -265,6 +276,7 @@ namespace eBookStore.Controllers
             return View(viewModel);
         }
 
+        // POST: Handles the addition of a comment to a book
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Comment(BookCommentViewModel model)
@@ -289,6 +301,7 @@ namespace eBookStore.Controllers
             return View(model);
         }
 
+        // GET: Generates a PDF report of all books
         public IActionResult GenerateBookReport()
         {
             var books = _context.Books.ToList();

@@ -10,6 +10,8 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
+// This controller handles all admin-related operations
+// Including dashboard, admin management, and admin CRUD operations
 [Authorize(Roles = "Admin")]
 public class AdminController : Controller
 {
@@ -24,6 +26,7 @@ public class AdminController : Controller
         _userManager = userManager;
     }
 
+    // GET: Displays the admin dashboard with summary statistics
     public async Task<IActionResult> Dashboard()
     {
         var viewModel = new AdminDashboardViewModel
@@ -38,23 +41,27 @@ public class AdminController : Controller
         return View(viewModel);
     }
 
+    // GET: Displays the form to register a new admin
     public IActionResult RegisterAdmin()
     {
         return View();
     }
 
     // Admins Management
+    // GET: Retrieves and displays all admins for management
     public async Task<IActionResult> ManageAdmins()
     {
         var admins = await _context.Admins.ToListAsync();
         return View(admins);
     }
 
+    // GET: Displays the form to create a new admin
     public IActionResult CreateAdmin()
     {
         return View();
     }
 
+    // POST: Handles the creation of a new admin
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateAdmin([Bind("FirstName,LastName,NICNo,Address,DateOfBirth,Email,ContactNo,Password")] Admin admin)
@@ -136,6 +143,7 @@ public class AdminController : Controller
         return View(admin);
     }
 
+    // GET: Displays the form to edit an existing admin
     public async Task<IActionResult> EditAdmin(int? id)
     {
         if (id == null)
@@ -151,6 +159,7 @@ public class AdminController : Controller
         return View(admin);
     }
 
+    // POST: Handles the editing of an existing admin
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditAdmin(int id, [Bind("Id,Username,FirstName,LastName,NICNo,Address,DateOfBirth,Email,ContactNo")] Admin admin)
@@ -208,6 +217,7 @@ public class AdminController : Controller
         return View(admin);
     }
 
+    // GET: Displays the confirmation page for deleting an admin
     public async Task<IActionResult> DeleteAdmin(int? id)
     {
         if (id == null)
@@ -225,6 +235,7 @@ public class AdminController : Controller
         return View(admin);
     }
 
+    // POST: Handles the deletion of an admin
     [HttpPost, ActionName("DeleteAdmin")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteAdminConfirmed(int id)
@@ -235,6 +246,7 @@ public class AdminController : Controller
         return RedirectToAction(nameof(ManageAdmins));
     }
 
+    // Helper method to check if an admin exists
     private bool AdminExists(int id)
     {
         return _context.Admins.Any(e => e.Id == id);
